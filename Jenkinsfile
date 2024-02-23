@@ -25,7 +25,7 @@ pipeline {
         
         stage('Sonarqube Analysis') {
             steps {
-                withSonarQubeEnv('sonar-server') {
+                withSonarQubeEnv('sonar-scanner') {
                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
                     -Dsonar.projectKey=Netflix '''
                 }
@@ -35,7 +35,7 @@ pipeline {
         stage('Quality gate') {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-scanner'
                 }
             }
         }
@@ -52,6 +52,35 @@ pipeline {
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
+        
+        stage('Build the docker image') {
+            steps  {
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
+                      sh '''
+                      docker build --build-arg TMDB_V3_API_KEY=56873956ae9f2853376e3ce3c907bfbf -t netflix .
+                      docker -t netflix 02271589/netflix:latest
+                      docker push 02271589/netflix:latest
+                   '''
+                   }
+                }
+            }
+        }
+
+        // stage('Run docker image') {
+        //     steps  { 
+        //         sh 'docker run -d -p 80:5000 02271589/proj:$version'
+        //     }
+        // }
+
+        // stage ('login to the image repo') {
+        //     steps {
+        //         echo "login to docker hub repo"
+        //           sh 'docker login -u $hub_username -p $hub_password'
+        //     }
+        // }
+        
+        
         
         stage('TRIVY FS Scan') {
             steps {
