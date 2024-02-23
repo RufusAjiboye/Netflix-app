@@ -7,7 +7,6 @@ RUN apk update && \
 
 COPY ./package.json .
 COPY ./yarn.lock .
-
 RUN yarn install
 COPY . .
 ARG TMDB_V3_API_KEY
