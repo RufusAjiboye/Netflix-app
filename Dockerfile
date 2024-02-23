@@ -2,7 +2,8 @@ FROM alpine:3.7
 
 WORKDIR /app
 RUN apk update && \
-    apk add python python3 &&
+    apk apt update && \
+    apk add python python3
 
 COPY ./package.json .
 COPY ./yarn.lock .
