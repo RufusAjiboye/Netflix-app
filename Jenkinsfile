@@ -69,7 +69,7 @@ pipeline {
 
         stage('Run docker Image') {
             steps {
-                sh "docker run -d --name netflix-image -p 8081:80 02271589/netflixapp:latest"
+                sh "docker run -d --name netflixapp -p 8082:80 02271589/netflixapp:latest"
             }
         }
 
