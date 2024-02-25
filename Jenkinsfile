@@ -53,23 +53,23 @@ pipeline {
             }
         }
         
-        // stage('Build the docker image') {
-        //     steps  {
-        //         script{
-        //            withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-        //               sh '''
-        //               docker build --build-arg TMDB_V3_API_KEY=56873956ae9f2853376e3ce3c907bfbf -t netflix .
-        //               docker tag netflix 02271589/netflix:latest
-        //               docker push 02271589/netflix:latest
-        //            '''
-        //            }
-        //         }
-        //     }
-        // }
+        stage('Build the docker image') {
+            steps  {
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
+                      sh '''
+                      sudo docker build --build-arg TMDB_V3_API_KEY=56873956ae9f2853376e3ce3c907bfbf -t netflix .
+                      sudo docker tag netflix 02271589/netflix:latest
+                      sudo docker push 02271589/netflix:latest
+                   '''
+                   }
+                }
+            }
+        }
 
         stage('Run docker Image') {
             steps {
-                sh "docker run -d --name netflixs -p 8082:80 02271589/netflixapp:latest"
+                sh "sudo docker run -d --name netflixs -p 8082:80 02271589/netflixapp:latest"
             }
         }
 
