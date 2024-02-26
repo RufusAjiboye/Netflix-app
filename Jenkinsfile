@@ -16,62 +16,62 @@ pipeline {
             }
         }
         
-        // stage('Checkout from Git') {
-        //     steps{
-        //         git branch: 'main', url: 'https://github.com/SoftwareDevDeveloper/Netflix-app'
+        stage('Checkout from Git') {
+            steps{
+                git branch: 'main', url: 'https://github.com/SoftwareDevDeveloper/Netflix-app'
             
-        //     }
-        // }
+            }
+        }
         
-        // stage('Sonarqube Analysis') {
-        //     steps {
-        //         withSonarQubeEnv('sonar-server') {
-        //             sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
-        //             -Dsonar.projectKey=Netflix '''
-        //         }
-        //     }
-        // }
+        stage('Sonarqube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                    -Dsonar.projectKey=Netflix '''
+                }
+            }
+        }
         
-        // stage('Quality gate') {
-        //     steps {
-        //         script {
-        //             waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-scanner'
-        //         }
-        //     }
-        // }
+        stage('Quality gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-scanner'
+                }
+            }
+        }
         
-        // stage('Install Dependencies') {
-        //     steps {
-        //         sh "npm install"
-        //     }
-        // }
+        stage('Install Dependencies') {
+            steps {
+                sh "npm install"
+            }
+        }
         
-        // stage('OWASP FS Scan') {
-        //     steps {
-        //         dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-        //         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-        //     }
-        // }
+        stage('OWASP FS Scan') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
         
-        // stage('Build the docker image') {
-        //     steps  {
-        //         script{
-        //            withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-        //               sh '''
-        //               sudo docker build --build-arg TMDB_V3_API_KEY=56873956ae9f2853376e3ce3c907bfbf -t netflix .
-        //               sudo docker tag netflix 02271589/netflix:latest
-        //               sudo docker push 02271589/netflix:latest
-        //            '''
-        //            }
-        //         }
-        //     }
-        // }
+        stage('Build the docker image') {
+            steps  {
+                script{
+                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
+                      sh '''
+                      sudo docker build --build-arg TMDB_V3_API_KEY=56873956ae9f2853376e3ce3c907bfbf -t netflix .
+                      sudo docker tag netflix 02271589/netflix:latest
+                      sudo docker push 02271589/netflix:latest
+                   '''
+                   }
+                }
+            }
+        }
 
-        // stage('Run docker Image') {
-        //     steps {
-        //         sh "sudo docker run -d --name net -p 8081:80 02271589/netflix:latest"
-        //     }
-        // }
+        stage('Run docker Image') {
+            steps {
+                sh "sudo docker run -d --name net -p 8081:80 02271589/netflix:latest"
+            }
+        }
 
         // stage('Run docker image') {
         //     steps  { 
@@ -88,22 +88,22 @@ pipeline {
         
         
         
-        // stage('TRIVY FS Scan') {
-        //     steps {
-        //         sh "trivy fs . > trivyfs.txt"
-        //     }
-        // }
+        stage('TRIVY FS Scan') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
     }
         
-    // post {
-    //     always {
-    //         emailext attachLog: true,
-    //             subject: "'${currentBuild.result}'",
-    //             body: "Project: ${env.JOB_NAME}<br/>" +
-    //               "Build Number: ${env.BUILD_NUMBER}<br/>" +
-    //               "URL: ${env.BUILD_URL}<br/>",
-    //             to: 'ruufman@gmail.com',
-    //             attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
-    //     }
-    // }
+    post {
+        always {
+            emailext attachLog: true,
+                subject: "'${currentBuild.result}'",
+                body: "Project: ${env.JOB_NAME}<br/>" +
+                  "Build Number: ${env.BUILD_NUMBER}<br/>" +
+                  "URL: ${env.BUILD_URL}<br/>",
+                to: 'ruufman@gmail.com',
+                attachmentsPattern: 'trivyfs.txt,trivyimage.txt'
+        }
+    }
 }
