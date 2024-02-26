@@ -9,12 +9,12 @@ pipeline {
         SCANNER_HOME=tool 'sonar-scanner'
     }
     
-    // stages {
-    //     stage('clean workspace') {
-    //         steps{
-    //             cleanWs()
-    //         }
-    //     }
+    stages {
+        stage('clean workspace') {
+            steps{
+                cleanWs()
+            }
+        }
         
         stage('Checkout from Git') {
             steps{
@@ -91,6 +91,19 @@ pipeline {
         stage('TRIVY FS Scan') {
             steps {
                 sh "trivy fs . > trivyfs.txt"
+            }
+        }
+
+        stage('Deploy to kubernets'){
+            steps{
+                script{
+                    dir('Kubernetes') {
+                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                                sh 'kubectl apply -f deployment.yml'
+                                sh 'kubectl apply -f service.yml'
+                        }
+                    }
+                }
             }
         }
     }
