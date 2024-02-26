@@ -9,12 +9,12 @@ pipeline {
         SCANNER_HOME=tool 'sonar-scanner'
     }
     
-    // stages {
-    //     stage('clean workspace') {
-    //         steps{
-    //             cleanWs()
-    //         }
-    //     }
+    stages {
+        stage('clean workspace') {
+            steps{
+                cleanWs()
+            }
+        }
         
         stage('Checkout from Git') {
             steps{
