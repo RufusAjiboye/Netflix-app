@@ -19,7 +19,6 @@ pipeline {
         stage('Checkout from Git') {
             steps{
                 git branch: 'main', url: 'https://github.com/SoftwareDevDeveloper/Netflix-app'
-            
             }
         }
 
@@ -75,6 +74,7 @@ pipeline {
                 sh "docker run --name myapp -d -p 8080:80 02271589/netflixapplication:latest"
             }
         }
+
 
         // stage('Run docker image') {
         //     steps  { 

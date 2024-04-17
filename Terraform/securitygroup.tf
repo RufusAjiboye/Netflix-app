@@ -35,6 +35,6 @@ resource "aws_security_group" "web-traffic" {
   }
 
   tags = {
-    Name = "Netflix-App"
+    Name = "Netflix-Apps"
   }
 }
